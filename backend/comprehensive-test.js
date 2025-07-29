@@ -105,8 +105,19 @@ async function comprehensiveTest() {
       headers: { Authorization: `Bearer ${token}` }
     });
     console.log('✅ AI component generation successful');
-    console.log('   - JSX Code length:', aiGenerate.data.data.jsxCode?.length || 0);
-    console.log('   - CSS Code length:', aiGenerate.data.data.cssCode?.length || 0);
+    console.log('   - JSX Code length:', aiGenerate.data.jsxCode?.length || 0);
+    console.log('   - CSS Code length:', aiGenerate.data.cssCode?.length || 0);
+
+    // Test chat endpoint
+    const chatResponse = await axios.post(`${BASE_URL}/ai/chat`, {
+      message: 'Create a simple button component',
+      sessionId: sessionId
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    console.log('✅ AI chat endpoint successful');
+    console.log('   - Chat response message:', chatResponse.data.message);
+    console.log('   - Chat JSX Code length:', chatResponse.data.jsxCode?.length || 0);
 
     // Test 9: Session Update
     console.log('\n9️⃣ SESSION UPDATE');

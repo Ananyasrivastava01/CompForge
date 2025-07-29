@@ -98,7 +98,7 @@ class ApiClient {
   getGoogleAuthUrl(): string {
     const redirectUri = typeof window !== 'undefined' 
       ? `${window.location.origin}/auth/callback` 
-      : 'http://localhost:3000/auth/callback';
+      : 'http://localhost:3001/auth/callback';
     
     return `${API_BASE_URL}/api/auth/google/url?redirect_uri=${encodeURIComponent(redirectUri)}`;
   }
@@ -106,7 +106,7 @@ class ApiClient {
   async handleOAuthCallback(provider: 'google', code: string): Promise<any> {
     const redirectUri = typeof window !== 'undefined' 
       ? `${window.location.origin}/auth/callback` 
-      : 'http://localhost:3000/auth/callback';
+      : 'http://localhost:3001/auth/callback';
     
     return this.post('/api/auth/oauth/callback', {
       provider,

@@ -9,6 +9,14 @@ class AIService {
   // Generate component code using AI
   async generateComponent(prompt, chatHistory = []) {
     try {
+      console.log('AI Service: Starting component generation');
+      console.log('AI Service: Prompt:', prompt);
+      console.log('AI Service: Chat history length:', chatHistory.length);
+      
+      if (!this.apiKey) {
+        throw new Error('OpenRouter API key is not configured');
+      }
+
       const messages = [
         {
           role: 'system',
@@ -42,6 +50,7 @@ CRITICAL: Your response must be valid JSON with jsxCode and cssCode fields.`
         }
       ];
 
+      console.log('AI Service: Making request to OpenRouter');
       const response = await axios.post(
         `${this.baseURL}/chat/completions`,
         {
@@ -61,21 +70,26 @@ CRITICAL: Your response must be valid JSON with jsxCode and cssCode fields.`
         }
       );
 
+      console.log('AI Service: Received response from OpenRouter');
       const content = response.data.choices[0].message.content;
+      console.log('AI Service: Raw content length:', content.length);
       
       // Try to parse as JSON first
       try {
         const parsed = JSON.parse(content);
+        console.log('AI Service: Successfully parsed JSON response');
         return {
           jsxCode: parsed.jsxCode || content,
           cssCode: parsed.cssCode || '',
           message: `Component generated successfully! Here's your ${parsed.jsxCode?.includes('Button') ? 'button' : 'component'}.`,
         };
       } catch (e) {
+        console.log('AI Service: Failed to parse as JSON, checking if it\'s JSX code');
         // If not JSON, check if it looks like JSX code
         if (content.includes('import React') || content.includes('export default') || content.includes('<')) {
           // It's JSX code, return it directly with a friendly message
-          const componentName = extractComponentName(content);
+          const componentName = this.extractComponentName(content);
+          console.log('AI Service: Detected JSX code, component name:', componentName);
           return {
             jsxCode: content,
             cssCode: '',
@@ -83,11 +97,15 @@ CRITICAL: Your response must be valid JSON with jsxCode and cssCode fields.`
           };
         } else {
           // It's not JSX, return as error
+          console.log('AI Service: Invalid response format');
           throw new Error('Invalid response format from AI');
         }
       }
     } catch (error) {
-      console.error('AI generation error:', error.message);
+      console.error('AI Service: Generation error:', error.message);
+      if (error.response) {
+        console.error('AI Service: OpenRouter error response:', error.response.data);
+      }
       throw new Error('Failed to generate component');
     }
   }

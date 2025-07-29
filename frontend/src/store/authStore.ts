@@ -76,7 +76,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           const redirectUri = typeof window !== 'undefined' 
             ? `${window.location.origin}/auth/callback` 
-            : 'http://localhost:3000/auth/callback';
+            : 'http://localhost:3001/auth/callback';
           
           const response = await apiClient.get<{authUrl: string}>(`/api/auth/google/url?redirect_uri=${encodeURIComponent(redirectUri)}`);
           window.location.href = response.authUrl;

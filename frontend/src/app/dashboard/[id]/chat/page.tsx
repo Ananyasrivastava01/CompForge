@@ -206,30 +206,32 @@ export default function ChatPage() {
       });
 
       console.log('AI response received:', response);
-      const aiResponse = response.data as any;
+      
+      // The response is already the data, not wrapped in response.data
+      const aiResponse = response;
       
       console.log('AI Response:', aiResponse);
       console.log('AI Response message:', aiResponse.message);
       console.log('AI Response jsxCode:', aiResponse.jsxCode);
       console.log('AI Response cssCode:', aiResponse.cssCode);
       
-      // Don't create assistant message - only update component
-      // const assistantMessage: ChatMessage = {
-      //   id: (Date.now() + 1).toString(),
-      //   role: 'assistant',
-      //   content: aiResponse.message || aiResponse.jsxCode || 'Component generated successfully!',
-      //   timestamp: new Date().toISOString(),
-      //   metadata: {
-      //     jsxCode: aiResponse.jsxCode,
-      //     cssCode: aiResponse.cssCode || '',
-      //   },
-      // };
+      // Create assistant message to show in chat
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: aiResponse.message || 'Component generated successfully!',
+        timestamp: new Date().toISOString(),
+        metadata: {
+          jsxCode: aiResponse.jsxCode,
+          cssCode: aiResponse.cssCode || '',
+        },
+      };
 
-      // console.log('Assistant message created:', assistantMessage);
-      // setMessages(prev => [...prev, assistantMessage]);
+      console.log('Assistant message created:', assistantMessage);
+      setMessages(prev => [...prev, assistantMessage]);
 
-      // Regular component generation
-      if (aiResponse.jsxCode && currentComponent) {
+      // Update component if JSX code is available
+      if (aiResponse.jsxCode) {
         const newComponent: GeneratedComponent = {
           jsxCode: aiResponse.jsxCode,
           cssCode: aiResponse.cssCode || '',
@@ -237,7 +239,7 @@ export default function ChatPage() {
         console.log('Setting new component:', newComponent);
         setCurrentComponent(newComponent);
 
-        // Update session with new component and chat history (only user message)
+        // Update session with new component and chat history
         await updateSession(id as string, {
           currentComponent: {
             ...session.currentComponent,
@@ -250,12 +252,12 @@ export default function ChatPage() {
             },
             version: (session.currentComponent?.version || 0) + 1,
           },
-          chatHistory: [...messages, userMessage], // Only include user message
+          chatHistory: [...messages, userMessage, assistantMessage],
         });
       } else {
-        // Even if no component generated, save only the user message
+        // Even if no component generated, save the chat history
         await updateSession(id as string, {
-          chatHistory: [...messages, userMessage], // Only include user message
+          chatHistory: [...messages, userMessage, assistantMessage],
         });
       }
 
