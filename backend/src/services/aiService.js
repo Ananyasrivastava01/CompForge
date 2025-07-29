@@ -21,13 +21,16 @@ IMPORTANT RULES:
 4. Make components responsive and accessible
 5. Use modern React patterns (hooks, functional components)
 6. Return ONLY the component code, no explanations in the code
-7. Format the response as JSON with jsxCode and cssCode fields
+7. ALWAYS format the response as JSON with jsxCode and cssCode fields
+8. Do NOT include any text outside the JSON format
 
 Example response format:
 {
   "jsxCode": "import React from 'react';\n\nexport default function Component() {\n  return (\n    <div className=\"...\">\n      ...\n    </div>\n  );\n}",
   "cssCode": "/* Additional CSS if needed */\n.custom-class {\n  ...\n}"
-}`
+}
+
+CRITICAL: Your response must be valid JSON with jsxCode and cssCode fields.`
         },
         ...chatHistory.map(msg => ({
           role: msg.role,
@@ -66,18 +69,47 @@ Example response format:
         return {
           jsxCode: parsed.jsxCode || content,
           cssCode: parsed.cssCode || '',
+          message: `Component generated successfully! Here's your ${parsed.jsxCode?.includes('Button') ? 'button' : 'component'}.`,
         };
       } catch (e) {
-        // If not JSON, return as plain JSX
-        return {
-          jsxCode: content,
-          cssCode: '',
-        };
+        // If not JSON, check if it looks like JSX code
+        if (content.includes('import React') || content.includes('export default') || content.includes('<')) {
+          // It's JSX code, return it directly with a friendly message
+          const componentName = extractComponentName(content);
+          return {
+            jsxCode: content,
+            cssCode: '',
+            message: `Component generated successfully! Here's your ${componentName || 'component'}.`,
+          };
+        } else {
+          // It's not JSX, return as error
+          throw new Error('Invalid response format from AI');
+        }
       }
     } catch (error) {
       console.error('AI generation error:', error.message);
       throw new Error('Failed to generate component');
     }
+  }
+
+  // Helper function to extract component name from JSX code
+  extractComponentName(jsxCode) {
+    const match = jsxCode.match(/export\s+default\s+(\w+)/);
+    if (match) {
+      return match[1];
+    }
+    
+    const functionMatch = jsxCode.match(/const\s+(\w+)\s*:\s*React\.FC/);
+    if (functionMatch) {
+      return functionMatch[1];
+    }
+    
+    const componentMatch = jsxCode.match(/function\s+(\w+)/);
+    if (componentMatch) {
+      return componentMatch[1];
+    }
+    
+    return 'Component';
   }
 
   // Stream component generation
@@ -95,7 +127,16 @@ IMPORTANT RULES:
 4. Make components responsive and accessible
 5. Use modern React patterns (hooks, functional components)
 6. Return ONLY the component code, no explanations in the code
-7. Format the response as JSON with jsxCode and cssCode fields`
+7. ALWAYS format the response as JSON with jsxCode and cssCode fields
+8. Do NOT include any text outside the JSON format
+
+Example response format:
+{
+  "jsxCode": "import React from 'react';\n\nexport default function Component() {\n  return (\n    <div className=\"...\">\n      ...\n    </div>\n  );\n}",
+  "cssCode": "/* Additional CSS if needed */\n.custom-class {\n  ...\n}"
+}
+
+CRITICAL: Your response must be valid JSON with jsxCode and cssCode fields.`
         },
         ...chatHistory.map(msg => ({
           role: msg.role,

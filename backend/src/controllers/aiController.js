@@ -32,10 +32,8 @@ const generateComponent = async (req, res) => {
       // Regular response
       const result = await aiService.generateComponent(prompt, chatHistory);
       
-      res.json({
-        success: true,
-        data: result,
-      });
+      // Return the result directly without the data wrapper
+      res.json(result);
     }
   } catch (error) {
     console.error('Generate component error:', error.message);
@@ -75,19 +73,14 @@ const modifyComponent = async (req, res) => {
       chatHistory
     );
 
-    res.json({
-      success: true,
-      data: result,
-    });
+    // Return the result directly without the data wrapper
+    res.json(result);
   } catch (error) {
     console.error('Modify component error:', error.message);
     res.status(500).json({ message: 'Failed to modify component' });
   }
 };
 
-// @desc    Chat with AI
-// @route   POST /api/ai/chat
-// @access  Private
 const chatWithAI = async (req, res) => {
   try {
     const { message, sessionId, stream = false } = req.body;
@@ -116,10 +109,8 @@ const chatWithAI = async (req, res) => {
       // Regular response
       const result = await aiService.generateComponent(message, chatHistory);
       
-      res.json({
-        success: true,
-        data: result,
-      });
+      // Return the result directly without the data wrapper
+      res.json(result);
     }
   } catch (error) {
     console.error('Chat with AI error:', error.message);

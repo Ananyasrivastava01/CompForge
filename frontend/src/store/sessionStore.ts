@@ -28,10 +28,16 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   loadSessions: async () => {
     set({ isLoading: true, error: null });
     try {
-      const sessions = await apiClient.get<Session[]>('/sessions');
-      set({ sessions, isLoading: false });
+      const response = await apiClient.get<{success: boolean, data: any[]}>('/api/sessions');
+      const sessions = response.data.map((session: any) => ({
+        ...session,
+        id: session._id || session.id, // Map MongoDB _id to id
+      }));
+      set({ sessions: Array.isArray(sessions) ? sessions : [], isLoading: false });
     } catch (error: any) {
+      console.error('Failed to load sessions:', error);
       set({
+        sessions: [],
         error: error.response?.data?.message || 'Failed to load sessions',
         isLoading: false,
       });
@@ -41,13 +47,18 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   createSession: async (data: CreateSessionRequest) => {
     set({ isLoading: true, error: null });
     try {
-      const newSession = await apiClient.post<Session>('/sessions', data);
+      const response = await apiClient.post<{success: boolean, data: any}>('/api/sessions', data);
+      const newSession = {
+        ...response.data,
+        id: response.data._id || response.data.id, // Map MongoDB _id to id
+      };
       set((state) => ({
         sessions: [...state.sessions, newSession],
         currentSession: newSession,
         isLoading: false,
       }));
     } catch (error: any) {
+      console.error('Create session error:', error);
       set({
         error: error.response?.data?.message || 'Failed to create session',
         isLoading: false,
@@ -59,7 +70,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   updateSession: async (sessionId: string, updates: UpdateSessionRequest) => {
     set({ isLoading: true, error: null });
     try {
-      const updatedSession = await apiClient.patch<Session>(`/sessions/${sessionId}`, updates);
+      const response = await apiClient.put<{success: boolean, data: any}>(`/api/sessions/${sessionId}`, updates);
+      const updatedSession = {
+        ...response.data,
+        id: response.data._id || response.data.id, // Map MongoDB _id to id
+      };
       set((state) => ({
         sessions: state.sessions.map(s => s.id === sessionId ? updatedSession : s),
         currentSession: state.currentSession?.id === sessionId ? updatedSession : state.currentSession,
@@ -75,15 +90,22 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   },
 
   deleteSession: async (sessionId: string) => {
+    console.log('Deleting session with ID:', sessionId); // Debug log
+    if (!sessionId) {
+      console.error('Session ID is undefined in deleteSession');
+      return;
+    }
+    
     set({ isLoading: true, error: null });
     try {
-      await apiClient.delete(`/sessions/${sessionId}`);
+      await apiClient.delete(`/api/sessions/${sessionId}`);
       set((state) => ({
         sessions: state.sessions.filter(s => s.id !== sessionId),
         currentSession: state.currentSession?.id === sessionId ? null : state.currentSession,
         isLoading: false,
       }));
     } catch (error: any) {
+      console.error('Delete session error:', error);
       set({
         error: error.response?.data?.message || 'Failed to delete session',
         isLoading: false,

@@ -16,6 +16,12 @@ router.post('/login', login);
 
 // OAuth routes
 router.get('/oauth/urls', getOAuthUrls);
+router.get('/google/url', (req, res) => {
+  const { redirect_uri } = req.query;
+  const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${baseUrl}/api/auth/google/callback&response_type=code&scope=email profile&state=${encodeURIComponent(redirect_uri || '')}`;
+  res.json({ authUrl: googleAuthUrl });
+});
 router.get('/google/callback', googleCallback);
 router.get('/github/callback', githubCallback);
 

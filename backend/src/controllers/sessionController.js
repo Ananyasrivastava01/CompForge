@@ -9,6 +9,8 @@ const getSessions = async (req, res) => {
       .sort({ updatedAt: -1 })
       .select('-chatHistory');
 
+    console.log('Sessions found:', sessions.map(s => ({ id: s._id, name: s.name }))); // Debug log
+
     res.json({
       success: true,
       count: sessions.length,
@@ -78,6 +80,8 @@ const createSession = async (req, res) => {
 // @access  Private
 const updateSession = async (req, res) => {
   try {
+    console.log('Update session request:', { id: req.params.id, body: req.body }); // Debug log
+    
     const { name, description, currentComponent, chatHistory } = req.body;
 
     const session = await Session.findOne({
@@ -86,8 +90,11 @@ const updateSession = async (req, res) => {
     });
 
     if (!session) {
+      console.log('Session not found for update'); // Debug log
       return res.status(404).json({ message: 'Session not found' });
     }
+
+    console.log('Found session for update:', session._id); // Debug log
 
     // Update fields
     if (name !== undefined) session.name = name;
@@ -96,6 +103,8 @@ const updateSession = async (req, res) => {
     if (chatHistory !== undefined) session.chatHistory = chatHistory;
 
     await session.save();
+
+    console.log('Session updated successfully'); // Debug log
 
     res.json({
       success: true,
@@ -112,14 +121,19 @@ const updateSession = async (req, res) => {
 // @access  Private
 const deleteSession = async (req, res) => {
   try {
+    console.log('Attempting to delete session with ID:', req.params.id); // Debug log
+    
     const session = await Session.findOneAndDelete({
       _id: req.params.id,
       userId: req.user._id,
     });
 
     if (!session) {
+      console.log('Session not found for deletion'); // Debug log
       return res.status(404).json({ message: 'Session not found' });
     }
+
+    console.log('Session deleted successfully:', session._id); // Debug log
 
     res.json({
       success: true,

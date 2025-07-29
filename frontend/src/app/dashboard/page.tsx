@@ -17,10 +17,17 @@ export default function DashboardPage() {
   }, [loadSessions]);
 
   const handleDeleteSession = async (sessionId: string) => {
+    if (!sessionId) {
+      console.error('Session ID is undefined');
+      return;
+    }
+    
     if (confirm('Are you sure you want to delete this session?')) {
       setDeletingSession(sessionId);
       try {
         await deleteSession(sessionId);
+      } catch (error) {
+        console.error('Failed to delete session:', error);
       } finally {
         setDeletingSession(null);
       }
@@ -57,7 +64,7 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
-      ) : sessions.length === 0 ? (
+      ) : !sessions || sessions.length === 0 ? (
         <div className="text-center py-12">
           <Code className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">No sessions yet</h3>
@@ -74,7 +81,9 @@ export default function DashboardPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sessions.map((session) => (
+          {sessions?.map((session) => {
+            console.log('Session data:', session); // Debug log
+            return (
             <div
               key={session.id}
               className="border rounded-lg p-6 hover:shadow-md transition-shadow"
@@ -131,16 +140,23 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              <div className="mt-4">
+              <div className="mt-4 space-y-2">
+                <button
+                  onClick={() => router.push(`/dashboard/${session.id}/chat`)}
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  Chat with AI
+                </button>
                 <button
                   onClick={() => router.push(`/dashboard/${session.id}`)}
                   className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Continue Session
+                  View Details
                 </button>
               </div>
             </div>
-          ))}
+          );
+          })}
         </div>
       )}
     </div>

@@ -26,13 +26,15 @@ export interface Session {
 
 export interface ChatMessage {
   id: string;
-  sessionId: string;
+  sessionId?: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
   metadata?: {
     elementId?: string;
     imageUrl?: string;
+    jsxCode?: string;
+    cssCode?: string;
   };
 }
 
@@ -45,4 +47,5 @@ export interface UpdateSessionRequest {
   name?: string;
   description?: string;
   currentComponent?: Partial<Component>;
+  chatHistory?: ChatMessage[];
 } 

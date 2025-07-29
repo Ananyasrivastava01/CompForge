@@ -10,6 +10,26 @@ class OAuthService {
   // Find or create user from OAuth profile
   async findOrCreateUser(profile, provider) {
     try {
+      console.log('Processing OAuth profile:', {
+        id: profile.id,
+        email: profile.email,
+        name: profile.name,
+        emails: profile.emails,
+        displayName: profile.displayName
+      });
+
+      // Validate profile has required fields
+      if (!profile.id) {
+        throw new Error('Profile ID is required');
+      }
+
+      // Get email from profile (Google provides email directly)
+      const email = profile.email || (profile.emails && profile.emails[0] && profile.emails[0].value);
+      
+      if (!email) {
+        throw new Error('Email is required for OAuth authentication');
+      }
+
       // Check if user exists with this OAuth ID
       let user = await User.findOne({
         oauthProvider: provider,
@@ -17,33 +37,38 @@ class OAuthService {
       });
 
       if (user) {
+        console.log('Found existing user by OAuth ID:', user._id);
         return user;
       }
 
       // Check if user exists with this email
-      user = await User.findOne({ email: profile.emails[0].value });
+      user = await User.findOne({ email: email });
 
       if (user) {
+        console.log('Found existing user by email, linking OAuth:', user._id);
         // Link existing account to OAuth
         user.oauthProvider = provider;
         user.oauthId = profile.id;
-        user.avatar = profile.photos?.[0]?.value;
+        user.avatar = profile.picture || profile.photos?.[0]?.value;
         user.emailVerified = true;
         await user.save();
         return user;
       }
 
       // Create new user
+      const userName = profile.name || profile.displayName || profile.given_name || 'User';
+      
       user = new User({
-        email: profile.emails[0].value,
-        name: profile.displayName || profile.username,
+        email: email,
+        name: userName,
         oauthProvider: provider,
         oauthId: profile.id,
-        avatar: profile.photos?.[0]?.value,
+        avatar: profile.picture || profile.photos?.[0]?.value,
         emailVerified: true,
       });
 
       await user.save();
+      console.log('Created new user:', user._id);
       return user;
     } catch (error) {
       console.error('OAuth user creation error:', error);

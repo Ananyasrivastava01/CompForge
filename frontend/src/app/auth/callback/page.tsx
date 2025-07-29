@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
+import { apiClient } from '@/lib/api';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 
 export default function AuthCallbackPage() {
@@ -17,6 +18,8 @@ export default function AuthCallbackPage() {
     const handleCallback = async () => {
       try {
         const code = searchParams.get('code');
+        const token = searchParams.get('token');
+        const user = searchParams.get('user');
         const error = searchParams.get('error');
 
         if (error) {
@@ -25,20 +28,48 @@ export default function AuthCallbackPage() {
           return;
         }
 
-        if (!code) {
-          setStatus('error');
-          setError('No authorization code received');
+        // Handle token-based authentication (from our backend)
+        if (token) {
+          try {
+            const userData = user ? JSON.parse(decodeURIComponent(user)) : null;
+            
+            // Set the token in the auth store
+            apiClient.setAuthToken(token);
+            
+            // Update auth store with user data
+            useAuthStore.getState().setUser(userData);
+            useAuthStore.getState().setToken(token);
+            useAuthStore.getState().setAuthenticated(true);
+            
+            setStatus('success');
+            
+            // Redirect to dashboard after a short delay
+            setTimeout(() => {
+              router.push('/dashboard');
+            }, 1500);
+            return;
+          } catch (parseError) {
+            console.error('Error parsing user data:', parseError);
+            setStatus('error');
+            setError('Invalid user data received');
+            return;
+          }
+        }
+
+        // Handle code-based authentication (direct from OAuth provider)
+        if (code) {
+          await handleOAuthCallback('google', code);
+          setStatus('success');
+          
+          // Redirect to dashboard after a short delay
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 1500);
           return;
         }
 
-        // Handle the OAuth callback
-        await handleOAuthCallback('google', code);
-        setStatus('success');
-        
-        // Redirect to dashboard after a short delay
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 1500);
+        setStatus('error');
+        setError('No authorization code or token received');
       } catch (error: any) {
         setStatus('error');
         setError(error.response?.data?.message || 'Authentication failed');

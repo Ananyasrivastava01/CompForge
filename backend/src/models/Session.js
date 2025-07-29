@@ -54,6 +54,8 @@ const sessionSchema = new mongoose.Schema({
     metadata: {
       elementId: String,
       imageUrl: String,
+      jsxCode: String,
+      cssCode: String,
     },
   }],
 }, {

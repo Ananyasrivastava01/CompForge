@@ -144,8 +144,12 @@ const googleCallback = async (req, res) => {
     const { code } = req.query;
 
     if (!code) {
-      return res.status(400).json({ message: 'Authorization code required' });
+      console.error('No authorization code received');
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      return res.redirect(`${frontendUrl}/auth/error?message=No authorization code received`);
     }
+
+    console.log('Received Google OAuth code, exchanging for token...');
 
     // Exchange code for access token
     const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
@@ -156,20 +160,32 @@ const googleCallback = async (req, res) => {
       redirect_uri: `${process.env.BASE_URL || 'http://localhost:5000'}/api/auth/google/callback`,
     });
 
+    console.log('Token exchange successful');
+
     const { access_token } = tokenResponse.data;
 
+    if (!access_token) {
+      console.error('No access token received from Google');
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      return res.redirect(`${frontendUrl}/auth/error?message=No access token received from Google`);
+    }
+
     // Get user profile
+    console.log('Fetching user profile from Google...');
     const profileResponse = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
     const profile = profileResponse.data;
+    console.log('User profile received:', { id: profile.id, email: profile.email, name: profile.name });
 
     // Find or create user
+    console.log('Finding or creating user...');
     const user = await oauthService.handleGoogleCallback(profile);
 
     // Generate token
     const token = oauthService.generateToken(user._id);
+    console.log('User authenticated successfully:', user._id);
 
     // Redirect to frontend with token
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -177,8 +193,9 @@ const googleCallback = async (req, res) => {
 
   } catch (error) {
     console.error('Google OAuth callback error:', error.message);
+    console.error('Error details:', error.response?.data || error);
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    res.redirect(`${frontendUrl}/auth/error?message=Google authentication failed`);
+    res.redirect(`${frontendUrl}/auth/error?message=Google authentication failed: ${error.message}`);
   }
 };
 

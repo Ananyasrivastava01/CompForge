@@ -18,6 +18,9 @@ interface AuthStore {
   logout: () => void;
   clearError: () => void;
   setLoading: (loading: boolean) => void;
+  setUser: (user: User | null) => void;
+  setToken: (token: string | null) => void;
+  setAuthenticated: (authenticated: boolean) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -32,7 +35,7 @@ export const useAuthStore = create<AuthStore>()(
       login: async (credentials: LoginRequest) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
+          const response = await apiClient.post<AuthResponse>('/api/auth/login', credentials);
           apiClient.setAuthToken(response.token);
           set({
             user: response.user,
@@ -52,7 +55,7 @@ export const useAuthStore = create<AuthStore>()(
       register: async (data: RegisterRequest) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await apiClient.post<AuthResponse>('/auth/register', data);
+          const response = await apiClient.post<AuthResponse>('/api/auth/register', data);
           apiClient.setAuthToken(response.token);
           set({
             user: response.user,
@@ -69,9 +72,17 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      loginWithGoogle: () => {
-        const authUrl = apiClient.getGoogleAuthUrl();
-        window.location.href = authUrl;
+      loginWithGoogle: async () => {
+        try {
+          const redirectUri = typeof window !== 'undefined' 
+            ? `${window.location.origin}/auth/callback` 
+            : 'http://localhost:3000/auth/callback';
+          
+          const response = await apiClient.get<{authUrl: string}>(`/api/auth/google/url?redirect_uri=${encodeURIComponent(redirectUri)}`);
+          window.location.href = response.authUrl;
+        } catch (error) {
+          console.error('Failed to get Google OAuth URL:', error);
+        }
       },
 
       handleOAuthCallback: async (provider: 'google', code: string) => {
@@ -110,6 +121,18 @@ export const useAuthStore = create<AuthStore>()(
 
       setLoading: (loading: boolean) => {
         set({ isLoading: loading });
+      },
+
+      setUser: (user: User | null) => {
+        set({ user });
+      },
+
+      setToken: (token: string | null) => {
+        set({ token });
+      },
+
+      setAuthenticated: (authenticated: boolean) => {
+        set({ isAuthenticated: authenticated });
       },
     }),
     {

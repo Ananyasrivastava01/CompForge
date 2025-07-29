@@ -100,7 +100,7 @@ class ApiClient {
       ? `${window.location.origin}/auth/callback` 
       : 'http://localhost:3000/auth/callback';
     
-    return `${API_BASE_URL}/auth/google/url?redirect_uri=${encodeURIComponent(redirectUri)}`;
+    return `${API_BASE_URL}/api/auth/google/url?redirect_uri=${encodeURIComponent(redirectUri)}`;
   }
 
   async handleOAuthCallback(provider: 'google', code: string): Promise<any> {
@@ -108,7 +108,7 @@ class ApiClient {
       ? `${window.location.origin}/auth/callback` 
       : 'http://localhost:3000/auth/callback';
     
-    return this.post('/auth/oauth/callback', {
+    return this.post('/api/auth/oauth/callback', {
       provider,
       code,
       redirect_uri: redirectUri,
