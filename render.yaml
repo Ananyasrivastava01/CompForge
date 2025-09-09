@@ -2,16 +2,11 @@ services:
   - type: web
     name: compforge-backend
     env: node
-    plan: free
-    region: frankfurt
+    rootDir: backend
     autoDeploy: true
     healthCheckPath: /health
-    buildCommand: |
-      cd backend
-      npm ci
-    startCommand: |
-      cd backend
-      npm start
+    buildCommand: npm ci
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
