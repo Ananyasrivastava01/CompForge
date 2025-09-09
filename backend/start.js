@@ -3,18 +3,16 @@ const path = require('path');
 
 console.log('🚀 Starting CompForge Backend...\n');
 
-// Check if .env file exists
+// Load .env if present; otherwise rely on platform env vars (e.g., Render/Vercel)
 const envPath = path.join(__dirname, '.env');
-if (!fs.existsSync(envPath)) {
-  console.log('⚠️  No .env file found!');
-  console.log('📝 Please create a .env file based on env.example');
-  console.log('💡 Run: cp env.example .env');
-  console.log('🔧 Then edit .env with your configuration\n');
-  process.exit(1);
+if (fs.existsSync(envPath)) {
+  require('dotenv').config({ path: envPath });
+  console.log('✅ Loaded environment from .env');
+} else {
+  console.log('ℹ️  No .env file found; using environment variables from the platform');
 }
 
 // Check required environment variables
-require('dotenv').config();
 
 const requiredEnvVars = [
   'MONGODB_URI',
