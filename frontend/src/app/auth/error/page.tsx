@@ -1,12 +1,13 @@
 'use client';
 
 export const dynamic = 'force-dynamic';
+import { Suspense } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { XCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const message = searchParams.get('message') || 'Authentication failed';
@@ -43,4 +44,12 @@ export default function AuthErrorPage() {
       </div>
     </div>
   );
-} 
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <AuthErrorContent />
+    </Suspense>
+  );
+}

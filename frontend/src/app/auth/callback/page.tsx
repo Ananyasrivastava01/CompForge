@@ -1,6 +1,7 @@
 'use client';
 
 export const dynamic = 'force-dynamic';
+import { Suspense } from 'react';
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -8,7 +9,7 @@ import { useAuthStore } from '@/store/authStore';
 import { apiClient } from '@/lib/api';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [error, setError] = useState<string>('');
   
@@ -130,4 +131,12 @@ export default function AuthCallbackPage() {
       </div>
     </div>
   );
-} 
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <AuthCallbackContent />
+    </Suspense>
+  );
+}
