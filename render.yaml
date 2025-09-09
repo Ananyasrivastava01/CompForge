@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: compforge-backend
+    env: node
+    plan: free
+    region: frankfurt
+    autoDeploy: true
+    healthCheckPath: /health
+    buildCommand: |
+      cd backend
+      npm ci
+    startCommand: |
+      cd backend
+      npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BASE_URL
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+

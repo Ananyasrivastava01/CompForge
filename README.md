@@ -252,11 +252,30 @@ CompForge/
 
 ## 🚀 Deployment
 
-This repo no longer includes provider-specific deployment files. When you’re ready to deploy, we can add minimal configs for your chosen platform (e.g., Vercel, Railway, Render) and set environment variables accordingly.
+Backend (Render) and Frontend (Vercel) quick deploy
 
-Frontend runtime needs `NEXT_PUBLIC_API_URL` (defaults to `http://localhost:5000` in development).
+Backend on Render (one-click):
+- This repo includes `render.yaml`. In Render, choose New → Blueprint → Connect your GitHub repo → pick this repository. Render will detect `render.yaml` and provision a Web Service.
+- Set the following environment variables in the Render dashboard (Service → Environment):
+  - `NODE_ENV=production`
+  - `BASE_URL=https://your-render-service.onrender.com` (after first deploy)
+  - `MONGODB_URI=your MongoDB Atlas URI`
+  - `JWT_SECRET=strong-random-string`
+  - `OPENROUTER_API_KEY=your key`
+  - `FRONTEND_URL=https://your-frontend-host`
+  - `CORS_ORIGIN=https://your-frontend-host`
+- Health check path: `/health` should return status OK when running.
 
-Backend requires the environment variables listed above.
+Frontend on Vercel:
+- Create a new Vercel project from the `frontend/` directory.
+- Set Environment Variable: `NEXT_PUBLIC_API_URL=https://your-render-service.onrender.com`
+- Build command: `npm run build` (default)
+- Start command: default (Vercel handles Next.js)
+- After deploy, open the site and verify API requests go to the backend (check Network tab).
+
+Notes
+- Ensure `CORS_ORIGIN` and `FRONTEND_URL` match your exact frontend origin (including https).
+- MongoDB: use MongoDB Atlas connection string.
 
 ---
 
