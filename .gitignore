@@ -1,0 +1,34 @@
+@"
+# Node
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Env
+backend/.env
+frontend/.env.local
+
+# Next.js
+.next/
+out/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Build
+frontend/.turbo/
+
+# Coverage
+coverage/
+
+# Misc
+*.zip
+*.tar.gz
+"@ | Set-Content -Encoding UTF8 .gitignore

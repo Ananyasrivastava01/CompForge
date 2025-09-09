@@ -104,10 +104,10 @@ GITHUB_CLIENT_ID=your-github-client-id
 GITHUB_CLIENT_SECRET=your-github-client-secret
 
 # Frontend URL
-FRONTEND_URL=http://localhost:3001
+FRONTEND_URL=http://localhost:3000
 
 # CORS
-CORS_ORIGIN=http://localhost:3001
+CORS_ORIGIN=http://localhost:3000
 ```
 
 4. **Start the application**
@@ -125,7 +125,7 @@ npm run dev
 ```
 
 5. **Access the application**
-- Frontend: http://localhost:3001
+- Frontend: http://localhost:3000
 - Backend API: http://localhost:5000
 - Health Check: http://localhost:5000/health
 
@@ -162,17 +162,7 @@ npm run dev
 
 ## 🧪 Testing
 
-### Backend Tests
-```bash
-cd backend
-node comprehensive-test.js
-```
-
-### API Testing
-```bash
-cd backend
-node test-api.js
-```
+Ad-hoc testing can be done with tools like Postman or curl. The repo no longer includes separate test scripts.
 
 ## 📚 API Documentation
 
@@ -231,11 +221,19 @@ CompForge/
 │   │   ├── routes/         # API routes
 │   │   ├── services/       # Business logic
 │   │   └── utils/          # Utility functions
-│   ├── comprehensive-test.js
 │   └── package.json
 ├── frontend/               # Next.js React app
 │   ├── src/
 │   │   ├── app/           # Next.js app router
+│   │   │   ├── page.tsx           # Home (Features section only)
+│   │   │   ├── pricing/           # Pricing page
+│   │   │   ├── api/               # API page
+│   │   │   ├── about/             # About page
+│   │   │   ├── blog/              # Blog page
+│   │   │   ├── careers/           # Careers page
+│   │   │   ├── help/              # Help Center page
+│   │   │   ├── contact/           # Contact page
+│   │   │   └── status/            # Status page
 │   │   ├── components/    # React components
 │   │   ├── lib/           # Utilities and API client
 │   │   ├── store/         # Zustand state management
@@ -254,16 +252,24 @@ CompForge/
 
 ## 🚀 Deployment
 
-### Backend Deployment
-1. Set `NODE_ENV=production`
-2. Use MongoDB Atlas for database
-3. Configure environment variables
-4. Deploy to Vercel, Railway, or Heroku
+This repo no longer includes provider-specific deployment files. When you’re ready to deploy, we can add minimal configs for your chosen platform (e.g., Vercel, Railway, Render) and set environment variables accordingly.
 
-### Frontend Deployment
-1. Build the application: `npm run build`
-2. Deploy to Vercel, Netlify, or similar
-3. Configure environment variables
+Frontend runtime needs `NEXT_PUBLIC_API_URL` (defaults to `http://localhost:5000` in development).
+
+Backend requires the environment variables listed above.
+
+---
+
+## 🧭 Navigation overview
+
+- Header: `Features` (in-page), `Pricing` (navigates to `/pricing`)
+- Footer routes: `/pricing`, `/api`, `/about`, `/blog`, `/careers`, `/help`, `/contact`, `/status`
+- Dashboard header now includes a `Home` button back to `/` and a `Back to Dashboard` button exists on all static pages
+
+## 💬 Chat UX updates
+
+- Code blocks are hidden inside chat bubbles; code is available in the right-side code panel
+- Chat auto-scrolling is disabled; scrolling is manual
 
 ## 🤝 Contributing
 

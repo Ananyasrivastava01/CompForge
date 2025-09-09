@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import { LogOut, Code, Plus, Settings, User } from 'lucide-react';
+import { LogOut, Code, Plus, Settings, User, Home } from 'lucide-react';
 
 export default function DashboardLayout({
   children,
@@ -39,6 +39,14 @@ export default function DashboardLayout({
           </div>
 
           <div className="flex items-center space-x-4">
+            <button
+              onClick={() => router.push('/')}
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm border rounded-md hover:bg-gray-50 transition-colors"
+              title="Back to Home"
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </button>
             <button
               onClick={() => router.push('/dashboard/new')}
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"

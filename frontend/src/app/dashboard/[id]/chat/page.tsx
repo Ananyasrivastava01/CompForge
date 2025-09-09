@@ -9,8 +9,7 @@ import { apiClient } from '@/lib/api';
 import ComponentRenderer from '@/components/ComponentRenderer';
 import CodeEditor from '@/components/CodeEditor';
 import PropertyPanel from '@/components/PropertyPanel';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
+// Removed code highlighting in chat bubbles to avoid showing code in chat
 
 interface ChatMessage {
   id: string;
@@ -48,7 +47,6 @@ export default function ChatPage() {
   const [currentComponent, setCurrentComponent] = useState<GeneratedComponent | null>(null);
   const [selectedElement, setSelectedElement] = useState<SelectedElement | null>(null);
   const [showPropertyPanel, setShowPropertyPanel] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const currentSession = sessions.find(s => s.id === id);
@@ -84,13 +82,7 @@ export default function ChatPage() {
     }
   }, [messages, currentComponent, session, id]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  // Removed all auto-scroll behavior; scrolling is fully manual now
 
   const handleElementClick = (element: SelectedElement) => {
     setSelectedElement(element);
@@ -394,15 +386,7 @@ ${currentComponent.cssCode}`;
                 }`}
               >
                 <p className="text-sm">{message.content}</p>
-                {message.metadata?.jsxCode && (
-                  <SyntaxHighlighter
-                    language="tsx"
-                    style={tomorrow}
-                    className="mt-2 rounded text-sm"
-                  >
-                    {message.metadata.jsxCode}
-                  </SyntaxHighlighter>
-                )}
+                {/* Intentionally hiding code blocks in chat bubbles */}
                 <p className="text-xs opacity-70 mt-2">
                   {new Date(message.timestamp).toLocaleTimeString()}
                 </p>
@@ -419,7 +403,7 @@ ${currentComponent.cssCode}`;
               </div>
             </div>
           )}
-          <div ref={messagesEndRef} />
+          {/* Manual scrolling: sentinel removed */}
         </div>
 
         {/* Input */}

@@ -17,12 +17,9 @@ export default function HomePage() {
             <a href="#features" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               Features
             </a>
-            <a href="#how-it-works" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
-              How it Works
-            </a>
-            <a href="#pricing" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/pricing" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               Pricing
-            </a>
+            </Link>
           </nav>
           <div className="flex items-center space-x-4">
             <Link 
@@ -71,13 +68,6 @@ export default function HomePage() {
               Start Building Free
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link 
-              href="#demo" 
-              className="border-2 border-gray-300 bg-white hover:border-gray-400 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200 transform hover:scale-105 hover:shadow-lg inline-flex items-center gap-2"
-            >
-              <Code className="h-5 w-5" />
-              Try Demo
-            </Link>
           </div>
 
           {/* Stats */}
@@ -97,6 +87,8 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+
+      {/* Removed other sections; they now have dedicated pages */}
 
       {/* Features Section */}
       <section id="features" className="py-20 bg-white">
@@ -269,33 +261,33 @@ export default function HomePage() {
             <div>
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-gray-600">
-                <li><a href="#" className="hover:text-gray-900">Features</a></li>
-                <li><a href="#" className="hover:text-gray-900">Pricing</a></li>
-                <li><a href="#" className="hover:text-gray-900">API</a></li>
+                <li><a href="#features" className="hover:text-gray-900">Features</a></li>
+                <li><Link href="/pricing" className="hover:text-gray-900">Pricing</Link></li>
+                <li><Link href="/api" className="hover:text-gray-900">API</Link></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-600">
-                <li><a href="#" className="hover:text-gray-900">About</a></li>
-                <li><a href="#" className="hover:text-gray-900">Blog</a></li>
-                <li><a href="#" className="hover:text-gray-900">Careers</a></li>
+                <li><Link href="/about" className="hover:text-gray-900">About</Link></li>
+                <li><Link href="/blog" className="hover:text-gray-900">Blog</Link></li>
+                <li><Link href="/careers" className="hover:text-gray-900">Careers</Link></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-gray-600">
-                <li><a href="#" className="hover:text-gray-900">Help Center</a></li>
-                <li><a href="#" className="hover:text-gray-900">Contact</a></li>
-                <li><a href="#" className="hover:text-gray-900">Status</a></li>
+                <li><Link href="/help" className="hover:text-gray-900">Help Center</Link></li>
+                <li><Link href="/contact" className="hover:text-gray-900">Contact</Link></li>
+                <li><Link href="/status" className="hover:text-gray-900">Status</Link></li>
               </ul>
             </div>
           </div>
           
           <div className="border-t mt-8 pt-8 text-center text-gray-600">
-            <p>&copy; 2024 CompForge. Built with ❤️ for developers.</p>
+            <p>&copy; 2025 CompForge. Built for developers.</p>
           </div>
         </div>
       </footer>
